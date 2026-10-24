@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apollo Quant</title>
+<style>
+  :root {
+    --ink: #14181f;
+    --paper: #f7f6f2;
+    --panel: #ffffff;
+    --border: #e1ded5;
+    --muted: #5c6370;
+    --accent: #1f5f4f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #eceae4;
+      --paper: #11141a;
+      --panel: #171b22;
+      --border: #2a2f3a;
+      --muted: #9aa1ad;
+      --accent: #5fd6b0;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  nav {
+    border-bottom: 1px solid var(--border);
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    font-size: 13.5px;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 20px 100px; }
+  header { margin-bottom: 56px; }
+  .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(32px, 5vw, 44px);
+    margin: 0 0 16px;
+    line-height: 1.15;
+  }
+  .lede {
+    font-size: 19px;
+    color: var(--muted);
+    max-width: 58ch;
+    margin: 0;
+  }
+  section { margin-bottom: 48px; }
+  h2 {
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0 0 18px;
+  }
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .stat .num {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat .label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .compare-table {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .compare-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .compare-table th, .compare-table td {
+    padding: 14px 18px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table th:first-child, .compare-table td:first-child {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .compare-table thead th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .compare-table tbody tr:last-child td { border-bottom: none; }
+  .compare-table td.hi {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .chart-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 16px;
+  }
+  .chart-panel canvas { display: block; width: 100%; }
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .chart-caption {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: 0 0 4px;
+  }
+  .as-of {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin: -10px 0 16px;
+  }
+  .invest-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .invest-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .invest-card .who {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .invest-card .big {
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .invest-card.hi .big { color: var(--accent); }
+  .invest-card .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .invest-card .dd {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .invest-card .dd b { color: var(--ink); }
+  .disclaimer {
+    font-size: 12px;
+    color: var(--muted);
+    border-left: 2px solid var(--border);
+    padding-left: 14px;
+    margin-top: 20px;
+    max-width: 62ch;
+  }
+  .how-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .how-step {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+  }
+  .how-step .n {
+    font-family: ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    width: 20px;
+  }
+  .how-step p { margin: 0; }
+  p { margin: 0 0 14px; max-width: 62ch; }
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+    margin-top: 64px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Apollo Quant</div>
+    <div class="nav-links">
+      <a href="#what-we-do">What we do</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#track-record">Track record</a>
+      <a href="#roadmap">Roadmap</a>
+    </div>
+  </div>
+</nav>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Apollo Quant</div>
+    <h1>AI-driven algorithmic trading, built for durability.</h1>
+    <p class="lede">We build systematic trading strategies that aim to outperform the
+      S&amp;P 500 with lower drawdown and lower volatility &mdash; validated across
+      over a decade of historical backtesting before a single live trade.</p>
+  </header>
+
+  <section id="what-we-do">
+    <h2>What we do</h2>
+    <p>Apollo Quant designs and operates AI-assisted trading systems that combine
+      systematic, rules-based decision-making with machine-learning techniques to
+      manage risk and position sizing. Our approach favors consistency and
+      capital preservation over chasing short-term outperformance &mdash; we'd rather
+      compound steadily through many market regimes than swing for one great year.</p>
+  </section>
+
+  <section id="how-it-works">
+    <h2>How it works</h2>
+    <div class="how-steps">
+      <div class="how-step">
+        <span class="n">01</span>
+        <p>Our models continuously read market data and generate a systematic view
+          of where risk and opportunity sit across the assets we trade.</p>
+      </div>
+      <div class="how-step">
+        <span class="n">02</span>
+        <p>Position sizing and exposure are set algorithmically, with explicit risk
+          limits &mdash; no single signal or event can move the portfolio outside
+          its risk budget.</p>
+      </div>
+      <div class="how-step">
+        <span class="n">03</span>
+        <p>Trades execute automatically, around the clock, with no manual
+          intervention or emotional decision-making in the loop.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="track-record">
+    <h2>Track record</h2>
+    <p class="as-of">Data as of October 2026.</p>
+    <div class="compare-table">
+      <table>
+        <thead>
+          <tr><th></th><th>Apollo Quant</th><th>S&amp;P 500</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Annualized return (CAGR)</td><td class="hi">13.66%</td><td>10.88%</td></tr>
+          <tr><td>Sharpe ratio</td><td class="hi">1.05</td><td>0.64</td></tr>
+          <tr><td>Max drawdown</td><td class="hi">&minus;29.3%</td><td>&minus;55.2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="invest-row">
+      <div class="invest-card hi">
+        <div class="who">Apollo Quant &mdash; $10,000 invested in 2005</div>
+        <div class="big">$161,739</div>
+        <div class="sub">today, if left to run</div>
+        <div class="dd">Worst stretch: grew to <b>$14,889</b> (Nov 2007), then fell to
+          <b>$10,523</b> (Nov 2008) before recovering &mdash; a 29.3% drop.</div>
+      </div>
+      <div class="invest-card">
+        <div class="who">S&amp;P 500 &mdash; $10,000 invested in 2005</div>
+        <div class="big">$94,351</div>
+        <div class="sub">today, if left to run</div>
+        <div class="dd">Worst stretch: grew to <b>$13,658</b> (Oct 2007), then fell to
+          <b>$6,120</b> (Mar 2009) before recovering &mdash; a 55.2% drop.</div>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <p class="chart-caption">Growth of $1, backtested 2005&ndash;2026 (21.7 years), log scale.</p>
+      <canvas id="chart" width="1400" height="640"></canvas>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--accent)"></span>Apollo Quant strategy</span>
+        <span><span class="dot" style="background:var(--muted)"></span>S&amp;P 500 (buy &amp; hold)</span>
+      </div>
+    </div>
+
+    <p class="disclaimer">Figures are from backtested historical simulation, not live
+      trading results, and assume reinvestment with no fees, taxes, or slippage
+      deducted. Past performance, simulated or actual, does not guarantee future
+      results. All investing carries risk of loss.</p>
+  </section>
+
+  <section id="roadmap">
+    <h2>Where we're headed</h2>
+    <p>We're currently validating our strategies with our own capital. Our next
+      step is making this available to others through a copy-trading offering,
+      so investors can access systematic, risk-managed returns without having to
+      build or run the system themselves.</p>
+  </section>
+
+  <footer>
+    &copy; 2026 Apollo Quant. Founded 2026. Dubai, UAE.
+  </footer>
+</div>
+<script>
+const DATA = {"strategy": [["2005-01-31", 0.9717], ["2005-02-28", 0.9682], ["2005-03-31", 0.9533], ["2005-04-30", 0.9449], ["2005-05-31", 0.9825], ["2005-06-30", 0.9816], ["2005-07-31", 1.0092], ["2005-08-31", 1.0079], ["2005-09-30", 1.0317], ["2005-10-31", 1.0174], ["2005-11-30", 1.0847], ["2005-12-31", 1.0883], ["2006-01-31", 1.1466], ["2006-02-28", 1.1246], ["2006-03-31", 1.1524], ["2006-04-30", 1.1963], ["2006-05-31", 1.1415], ["2006-06-30", 1.1224], ["2006-07-31", 1.1058], ["2006-08-31", 1.1265], ["2006-09-30", 1.1363], ["2006-10-31", 1.1687], ["2006-11-30", 1.2168], ["2006-12-31", 1.1939], ["2007-01-31", 1.2184], ["2007-02-28", 1.2147], ["2007-03-31", 1.2101], ["2007-04-30", 1.26], ["2007-05-31", 1.2791], ["2007-06-30", 1.2735], ["2007-07-31", 1.2755], ["2007-08-31", 1.3052], ["2007-09-30", 1.3836], ["2007-10-31", 1.477], ["2007-11-30", 1.4106], ["2007-12-31", 1.4409], ["2008-01-31", 1.3935], ["2008-02-29", 1.3849], ["2008-03-31", 1.3766], ["2008-04-30", 1.4021], ["2008-05-31", 1.4456], ["2008-06-30", 1.3954], ["2008-07-31", 1.3932], ["2008-08-31", 1.3666], ["2008-09-30", 1.2793], ["2008-10-31", 1.1572], ["2008-11-30", 1.1317], ["2008-12-31", 1.1709], ["2009-01-31", 1.1607], ["2009-02-28", 1.134], ["2009-03-31", 1.1843], ["2009-04-30", 1.2394], ["2009-05-31", 1.2774], ["2009-06-30", 1.281], ["2009-07-31", 1.3347], ["2009-08-31", 1.348], ["2009-09-30", 1.4069], ["2009-10-31", 1.3929], ["2009-11-30", 1.4879], ["2009-12-31", 1.505], ["2010-01-31", 1.4384], ["2010-02-28", 1.4904], ["2010-03-31", 1.5594], ["2010-04-30", 1.6023], ["2010-05-31", 1.5416], ["2010-06-30", 1.5009], ["2010-07-31", 1.5398], ["2010-08-31", 1.534], ["2010-09-30", 1.6648], ["2010-10-31", 1.7436], ["2010-11-30", 1.7472], ["2010-12-31", 1.8131], ["2011-01-31", 1.8031], ["2011-02-28", 1.8722], ["2011-03-31", 1.8708], ["2011-04-30", 1.9634], ["2011-05-31", 1.9384], ["2011-06-30", 1.8972], ["2011-07-31", 1.9706], ["2011-08-31", 2.0031], ["2011-09-30", 1.8908], ["2011-10-31", 2.025], ["2011-11-30", 2.0012], ["2011-12-31", 1.9479], ["2012-01-31", 2.0885], ["2012-02-29", 2.1272], ["2012-03-31", 2.1625], ["2012-04-30", 2.1593], ["2012-05-31", 2.0775], ["2012-06-30", 2.1217], ["2012-07-31", 2.1494], ["2012-08-31", 2.2171], ["2012-09-30", 2.2336], ["2012-10-31", 2.1422], ["2012-11-30", 2.1638], ["2012-12-31", 2.1539], ["2013-01-31", 2.2187], ["2013-02-28", 2.2222], ["2013-03-31", 2.2728], ["2013-04-30", 2.298], ["2013-05-31", 2.348], ["2013-06-30", 2.2769], ["2013-07-31", 2.3759], ["2013-08-31", 2.3855], ["2013-09-30", 2.4403], ["2013-10-31", 2.5136], ["2013-11-30", 2.5766], ["2013-12-31", 2.6309], ["2014-01-31", 2.5888], ["2014-02-28", 2.6905], ["2014-03-31", 2.6296], ["2014-04-30", 2.623], ["2014-05-31", 2.696], ["2014-06-30", 2.7797], ["2014-07-31", 2.7873], ["2014-08-31", 2.9139], ["2014-09-30", 2.8829], ["2014-10-31", 2.9359], ["2014-11-30", 3.0877], ["2014-12-31", 3.0683], ["2015-01-31", 3.1417], ["2015-02-28", 3.211], ["2015-03-31", 3.1561], ["2015-04-30", 3.1727], ["2015-05-31", 3.2381], ["2015-06-30", 3.157], ["2015-07-31", 3.2438], ["2015-08-31", 3.0705], ["2015-09-30", 3.0243], ["2015-10-31", 3.237], ["2015-11-30", 3.2295], ["2015-12-31", 3.1969], ["2016-01-31", 3.0515], ["2016-02-29", 3.0029], ["2016-03-31", 3.0864], ["2016-04-30", 3.1036], ["2016-05-31", 3.1109], ["2016-06-30", 3.2264], ["2016-07-31", 3.3585], ["2016-08-31", 3.344], ["2016-09-30", 3.3901], ["2016-10-31", 3.296], ["2016-11-30", 3.1514], ["2016-12-31", 3.1253], ["2017-01-31", 3.2889], ["2017-02-28", 3.416], ["2017-03-31", 3.4611], ["2017-04-30", 3.5381], ["2017-05-31", 3.6403], ["2017-06-30", 3.5644], ["2017-07-31", 3.6858], ["2017-08-31", 3.7551], ["2017-09-30", 3.736], ["2017-10-31", 3.861], ["2017-11-30", 3.9169], ["2017-12-31", 3.9657], ["2018-01-31", 4.2715], ["2018-02-28", 4.1937], ["2018-03-31", 4.0809], ["2018-04-30", 4.0842], ["2018-05-31", 4.2174], ["2018-06-30", 4.2154], ["2018-07-31", 4.2769], ["2018-08-31", 4.4325], ["2018-09-30", 4.4291], ["2018-10-31", 4.1792], ["2018-11-30", 4.1432], ["2018-12-31", 3.8944], ["2019-01-31", 4.0395], ["2019-02-28", 4.0882], ["2019-03-31", 4.1993], ["2019-04-30", 4.3375], ["2019-05-31", 4.201], ["2019-06-30", 4.4672], ["2019-07-31", 4.5253], ["2019-08-31", 4.7068], ["2019-09-30", 4.6496], ["2019-10-31", 4.7848], ["2019-11-30", 4.8399], ["2019-12-31", 4.9919], ["2020-01-31", 5.2148], ["2020-02-29", 5.0505], ["2020-03-31", 4.9116], ["2020-04-30", 5.395], ["2020-05-31", 5.6175], ["2020-06-30", 5.868], ["2020-07-31", 6.3113], ["2020-08-31", 6.6775], ["2020-09-30", 6.3858], ["2020-10-31", 6.2593], ["2020-11-30", 6.5708], ["2020-12-31", 6.8662], ["2021-01-31", 6.8132], ["2021-02-28", 6.7112], ["2021-03-31", 6.7777], ["2021-04-30", 7.0573], ["2021-05-31", 7.1041], ["2021-06-30", 7.2521], ["2021-07-31", 7.3893], ["2021-08-31", 7.5861], ["2021-09-30", 7.2867], ["2021-10-31", 7.6836], ["2021-11-30", 7.7596], ["2021-12-31", 7.8824], ["2022-01-31", 7.4024], ["2022-02-28", 7.3121], ["2022-03-31", 7.5843], ["2022-04-30", 7.2057], ["2022-05-31", 7.0285], ["2022-06-30", 6.8733], ["2022-07-31", 7.1482], ["2022-08-31", 7.0398], ["2022-09-30", 6.8041], ["2022-10-31", 6.9839], ["2022-11-30", 7.1051], ["2022-12-31", 6.8318], ["2023-01-31", 7.1448], ["2023-02-28", 7.1367], ["2023-03-31", 7.4519], ["2023-04-30", 7.476], ["2023-05-31", 7.8452], ["2023-06-30", 8.1172], ["2023-07-31", 8.3422], ["2023-08-31", 8.2834], ["2023-09-30", 7.965], ["2023-10-31", 8.0189], ["2023-11-30", 8.5603], ["2023-12-31", 8.8558], ["2024-01-31", 8.9531], ["2024-02-29", 9.3201], ["2024-03-31", 9.5856], ["2024-04-30", 9.429], ["2024-05-31", 9.8293], ["2024-06-30", 10.2719], ["2024-07-31", 10.25], ["2024-08-31", 10.3243], ["2024-09-30", 10.6498], ["2024-10-31", 10.6961], ["2024-11-30", 10.937], ["2024-12-31", 10.9415], ["2025-01-31", 11.3071], ["2025-02-28", 11.1909], ["2025-03-31", 11.0726], ["2025-04-30", 11.3662], ["2025-05-31", 11.908], ["2025-06-30", 12.324], ["2025-07-31", 12.4402], ["2025-08-31", 12.7127], ["2025-09-30", 13.5737], ["2025-10-31", 14.1137], ["2025-11-30", 14.2229], ["2025-12-31", 14.2733], ["2026-01-31", 14.9473], ["2026-02-28", 15.1703], ["2026-03-31", 14.2806], ["2026-04-30", 15.5058], ["2026-05-31", 16.4547], ["2026-06-30", 16.0078], ["2026-07-31", 15.3282], ["2026-08-31", 16.0424], ["2026-09-30", 16.1038], ["2026-10-31", 16.1739]], "spy": [["2005-01-31", 0.9822], ["2005-02-28", 1.0027], ["2005-03-31", 0.9844], ["2005-04-30", 0.966], ["2005-05-31", 0.9971], ["2005-06-30", 0.9986], ["2005-07-31", 1.0368], ["2005-08-31", 1.0271], ["2005-09-30", 1.0353], ["2005-10-31", 1.0108], ["2005-11-30", 1.0553], ["2005-12-31", 1.0533], ["2006-01-31", 1.0785], ["2006-02-28", 1.0847], ["2006-03-31", 1.1026], ["2006-04-30", 1.1165], ["2006-05-31", 1.0829], ["2006-06-30", 1.0857], ["2006-07-31", 1.0906], ["2006-08-31", 1.1144], ["2006-09-30", 1.1445], ["2006-10-31", 1.1806], ["2006-11-30", 1.204], ["2006-12-31", 1.2201], ["2007-01-31", 1.2385], ["2007-02-28", 1.2142], ["2007-03-31", 1.2283], ["2007-04-30", 1.2827], ["2007-05-31", 1.3262], ["2007-06-30", 1.3068], ["2007-07-31", 1.2659], ["2007-08-31", 1.2821], ["2007-09-30", 1.3318], ["2007-10-31", 1.3498], ["2007-11-30", 1.2975], ["2007-12-31", 1.2829], ["2008-01-31", 1.2054], ["2008-02-29", 1.1742], ["2008-03-31", 1.1637], ["2008-04-30", 1.2192], ["2008-05-31", 1.2376], ["2008-06-30", 1.1342], ["2008-07-31", 1.124], ["2008-08-31", 1.1414], ["2008-09-30", 1.0339], ["2008-10-31", 0.8631], ["2008-11-30", 0.803], ["2008-12-31", 0.8109], ["2009-01-31", 0.7443], ["2009-02-28", 0.6643], ["2009-03-31", 0.7197], ["2009-04-30", 0.7912], ["2009-05-31", 0.8374], ["2009-06-30", 0.8369], ["2009-07-31", 0.8993], ["2009-08-31", 0.9325], ["2009-09-30", 0.9656], ["2009-10-31", 0.947], ["2009-11-30", 1.0054], ["2009-12-31", 1.0246], ["2010-01-31", 0.9873], ["2010-02-28", 1.0181], ["2010-03-31", 1.0801], ["2010-04-30", 1.0968], ["2010-05-31", 1.0097], ["2010-06-30", 0.9574], ["2010-07-31", 1.0228], ["2010-08-31", 0.9768], ["2010-09-30", 1.0643], ["2010-10-31", 1.1049], ["2010-11-30", 1.1049], ["2010-12-31", 1.1788], ["2011-01-31", 1.2063], ["2011-02-28", 1.2482], ["2011-03-31", 1.2483], ["2011-04-30", 1.2845], ["2011-05-31", 1.2701], ["2011-06-30", 1.2487], ["2011-07-31", 1.2237], ["2011-08-31", 1.1564], ["2011-09-30", 1.0761], ["2011-10-31", 1.1936], ["2011-11-30", 1.1887], ["2011-12-31", 1.2012], ["2012-01-31", 1.2569], ["2012-02-29", 1.3114], ["2012-03-31", 1.3536], ["2012-04-30", 1.3446], ["2012-05-31", 1.2638], ["2012-06-30", 1.3151], ["2012-07-31", 1.3307], ["2012-08-31", 1.364], ["2012-09-30", 1.3986], ["2012-10-31", 1.3731], ["2012-11-30", 1.3809], ["2012-12-31", 1.3932], ["2013-01-31", 1.4645], ["2013-02-28", 1.4832], ["2013-03-31", 1.5395], ["2013-04-30", 1.5691], ["2013-05-31", 1.6062], ["2013-06-30", 1.5847], ["2013-07-31", 1.6666], ["2013-08-31", 1.6166], ["2013-09-30", 1.6678], ["2013-10-31", 1.745], ["2013-11-30", 1.7968], ["2013-12-31", 1.8433], ["2014-01-31", 1.7784], ["2014-02-28", 1.8593], ["2014-03-31", 1.8747], ["2014-04-30", 1.8878], ["2014-05-31", 1.9316], ["2014-06-30", 1.9715], ["2014-07-31", 1.945], ["2014-08-31", 2.0217], ["2014-09-30", 1.9938], ["2014-10-31", 2.0408], ["2014-11-30", 2.0968], ["2014-12-31", 2.0915], ["2015-01-31", 2.0296], ["2015-02-28", 2.1436], ["2015-03-31", 2.11], ["2015-04-30", 2.1307], ["2015-05-31", 2.1581], ["2015-06-30", 2.1143], ["2015-07-31", 2.162], ["2015-08-31", 2.0302], ["2015-09-30", 1.9784], ["2015-10-31", 2.1467], ["2015-11-30", 2.1546], ["2015-12-31", 2.1173], ["2016-01-31", 2.0119], ["2016-02-29", 2.0103], ["2016-03-31", 2.1455], ["2016-04-30", 2.1539], ["2016-05-31", 2.1906], ["2016-06-30", 2.1982], ["2016-07-31", 2.2784], ["2016-08-31", 2.2811], ["2016-09-30", 2.2812], ["2016-10-31", 2.2417], ["2016-11-30", 2.3243], ["2016-12-31", 2.3714], ["2017-01-31", 2.4138], ["2017-02-28", 2.5087], ["2017-03-31", 2.5118], ["2017-04-30", 2.5367], ["2017-05-31", 2.5725], ["2017-06-30", 2.5889], ["2017-07-31", 2.6421], ["2017-08-31", 2.6498], ["2017-09-30", 2.7032], ["2017-10-31", 2.7669], ["2017-11-30", 2.8515], ["2017-12-31", 2.8861], ["2018-01-31", 3.0488], ["2018-02-28", 2.9379], ["2018-03-31", 2.8574], ["2018-04-30", 2.8721], ["2018-05-31", 2.942], ["2018-06-30", 2.9589], ["2018-07-31", 3.0685], ["2018-08-31", 3.1664], ["2018-09-30", 3.1853], ["2018-10-31", 2.9651], ["2018-11-30", 3.0201], ["2018-12-31", 2.7542], ["2019-01-31", 2.9747], ["2019-02-28", 3.0712], ["2019-03-31", 3.1268], ["2019-04-30", 3.2545], ["2019-05-31", 3.047], ["2019-06-30", 3.259], ["2019-07-31", 3.3083], ["2019-08-31", 3.2529], ["2019-09-30", 3.3162], ["2019-10-31", 3.3895], ["2019-11-30", 3.5122], ["2019-12-31", 3.6142], ["2020-01-31", 3.6127], ["2020-02-29", 3.3267], ["2020-03-31", 2.9113], ["2020-04-30", 3.281], ["2020-05-31", 3.4373], ["2020-06-30", 3.4983], ["2020-07-31", 3.7043], ["2020-08-31", 3.9629], ["2020-09-30", 3.8145], ["2020-10-31", 3.7194], ["2020-11-30", 4.124], ["2020-12-31", 4.2767], ["2021-01-31", 4.2332], ["2021-02-28", 4.3509], ["2021-03-31", 4.5484], ["2021-04-30", 4.7891], ["2021-05-31", 4.8205], ["2021-06-30", 4.9286], ["2021-07-31", 5.0489], ["2021-08-31", 5.1992], ["2021-09-30", 4.9569], ["2021-10-31", 5.3047], ["2021-11-30", 5.262], ["2021-12-31", 5.5054], ["2022-01-31", 5.215], ["2022-02-28", 5.0611], ["2022-03-31", 5.2514], ["2022-04-30", 4.7905], ["2022-05-31", 4.8013], ["2022-06-30", 4.4054], ["2022-07-31", 4.811], ["2022-08-31", 4.6147], ["2022-09-30", 4.1881], ["2022-10-31", 4.5285], ["2022-11-30", 4.7803], ["2022-12-31", 4.5048], ["2023-01-31", 4.7881], ["2023-02-28", 4.6677], ["2023-03-31", 4.8408], ["2023-04-30", 4.9181], ["2023-05-31", 4.9408], ["2023-06-30", 5.261], ["2023-07-31", 5.4332], ["2023-08-31", 5.3449], ["2023-09-30", 5.0913], ["2023-10-31", 4.9808], ["2023-11-30", 5.4358], ["2023-12-31", 5.6839], ["2024-01-31", 5.7745], ["2024-02-29", 6.0758], ["2024-03-31", 6.2745], ["2024-04-30", 6.0215], ["2024-05-31", 6.3261], ["2024-06-30", 6.5493], ["2024-07-31", 6.6286], ["2024-08-31", 6.7835], ["2024-09-30", 6.9259], ["2024-10-31", 6.8641], ["2024-11-30", 7.2735], ["2024-12-31", 7.0985], ["2025-01-31", 7.2891], ["2025-02-28", 7.1966], ["2025-03-31", 6.7956], ["2025-04-30", 6.7367], ["2025-05-31", 7.16], ["2025-06-30", 7.528], ["2025-07-31", 7.7013], ["2025-08-31", 7.8594], ["2025-09-30", 8.1393], ["2025-10-31", 8.3333], ["2025-11-30", 8.3496], ["2025-12-31", 8.3563], ["2026-01-31", 8.4794], ["2026-02-28", 8.4061], ["2026-03-31", 7.991], ["2026-04-30", 8.8305], ["2026-05-31", 9.2952], ["2026-06-30", 9.1996], ["2026-07-31", 9.2028], ["2026-08-31", 9.4494], ["2026-09-30", 9.4183], ["2026-10-31", 9.4351]]};
+
+function draw(){
+  const cv = document.getElementById('chart');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const pad = {l:56, r:16, t:14, b:38};
+  ctx.clearRect(0,0,W,H);
+
+  const css = getComputedStyle(document.documentElement);
+  const col = (v) => css.getPropertyValue(v).trim();
+  const inkC = col('--ink'), mutedC = col('--muted'), accentC = col('--accent'), borderC = col('--border');
+
+  const parse = (arr) => arr.map(([d,v]) => [new Date(d).getTime(), v]);
+  const strat = parse(DATA.strategy), spy = parse(DATA.spy);
+  const all = strat.concat(spy);
+  const xmin = Math.min(...all.map(p=>p[0])), xmax = Math.max(...all.map(p=>p[0]));
+  const logs = all.map(p=>Math.log10(p[1]));
+  const ymin = Math.min(...logs), ymax = Math.max(...logs);
+
+  const X = (t) => pad.l + (t - xmin) / (xmax - xmin) * (W - pad.l - pad.r);
+  const Y = (v) => H - pad.b - (Math.log10(v) - ymin) / (ymax - ymin) * (H - pad.t - pad.b);
+
+  ctx.strokeStyle = borderC; ctx.lineWidth = 1; ctx.font = '19px -apple-system, sans-serif';
+  ctx.fillStyle = mutedC; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(const v of [0.5,1,2,3,5,7,10]){
+    const logv = Math.log10(v);
+    if(logv < ymin-0.02 || logv > ymax+0.02) continue;
+    const y = Y(v);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
+    ctx.fillText(v+'×', pad.l-8, y);
+  }
+
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  const startYear = new Date(xmin).getFullYear(), endYear = new Date(xmax).getFullYear();
+  for(let y=startYear; y<=endYear; y+=4){
+    const t = new Date(y,0,1).getTime();
+    if(t < xmin || t > xmax) continue;
+    const x = X(t);
+    ctx.strokeStyle = borderC;
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, H-pad.b); ctx.stroke();
+    ctx.fillStyle = mutedC;
+    ctx.fillText(''+y, x, H-pad.b+6);
+  }
+
+  function plot(series, color, width){
+    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineJoin='round'; ctx.beginPath();
+    series.forEach(([t,v],i)=>{
+      const x=X(t), y=Y(v);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    const [lt,lv] = series[series.length-1];
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(X(lt),Y(lv),4.5,0,Math.PI*2); ctx.fill();
+  }
+  plot(spy, mutedC, 2);
+  plot(strat, accentC, 3);
+
+  ctx.strokeStyle = inkC; ctx.globalAlpha = 0.3; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H-pad.b); ctx.lineTo(W-pad.r, H-pad.b); ctx.stroke();
+  ctx.globalAlpha = 1;
+}
+function resize(){
+  const cv = document.getElementById('chart');
+  cv.width = cv.clientWidth * 2; cv.height = cv.clientWidth * 2 * (640/1400);
+  draw();
+}
+window.addEventListener('resize', resize);
+setTimeout(resize, 50);
+</script>
+</body>
+</html>
